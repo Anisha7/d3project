@@ -44,14 +44,23 @@ function buildSomething(data) {
     .outerRadius(d => d.y1 - 1);
 
   svg
-    .append("g")
+    .append("g") // g:a
+    // .attr("xlink:href", "http://en.wikipedia.org/", '_blank')
     .attr("fill-opacity", 0.6)
     .selectAll("path")
     .data(r.descendants().filter(d => d.depth))
     .enter()
     .append("path")
+    .style("cursor", d => d.depth > 2 ? "pointer" : "default")
+    .on('click', function(d) {
+        if (d.depth > 2) {
+            window.open(
+              `https://www.youtube.com/results?search_query=${d.data.name}`, // update link
+              '_blank' 
+            );
+        }
+      })
     .attr("fill", d => {
-      // TODO: make hue lighter for highter depth
       const depth = d.depth
       while (d.depth > 1) d = d.parent;
       return d3.rgb(color(d.data.name)).brighter(depth)
@@ -65,7 +74,14 @@ function buildSomething(data) {
           .map(d => d.data.name)
           .reverse()
           .join("/")}\n${format(d.value)}`
-    );
+    )
+    // tried to make text links underline on hover
+    // .classed("linked", d => d.depth > 2 ? true : false)
+    // .on('hover', d => {
+    //     if (d.depth > 2) { 
+    //         d3.select(this).style("color", "blue"); 
+    //     }
+    // });
 
   svg
     .append("g")
