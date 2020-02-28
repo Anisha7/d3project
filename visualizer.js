@@ -22,14 +22,14 @@ function autoBox() {
 
 // BUILD IT
 function buildSomething(data) {
-  console.log(data);
+//   console.log(data);
   const color = d3.scaleOrdinal(
     d3.quantize(d3.interpolateRainbow, data.children.length + 1)
   );
 
   const r = partition(data);
-  console.log(r);
-  console.log(r.descendants().filter(d => d.depth));
+//   console.log(r);
+//   console.log(r.descendants().filter(d => d.depth));
   // const r = data
   const svg = d3
     .select("#svg")
