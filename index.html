@@ -103,7 +103,7 @@
             console.log(r)
             console.log(r.descendants().filter(d => d.depth))
             // const r = data
-            const svg = d3.create("svg")
+            const svg = d3.select("#svg")
                 .style("max-width", "100%")
                 .style("height", "auto")
                 .style("font", "10px sans-serif")
