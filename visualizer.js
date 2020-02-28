@@ -51,8 +51,10 @@ function buildSomething(data) {
     .enter()
     .append("path")
     .attr("fill", d => {
+      // TODO: make hue lighter for highter depth
+      const depth = d.depth
       while (d.depth > 1) d = d.parent;
-      return color(d.data.name);
+      return d3.rgb(color(d.data.name)).brighter(depth)
     })
     .attr("d", arc)
     .append("title")
