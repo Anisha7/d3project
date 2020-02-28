@@ -1,26 +1,43 @@
-// HELPERS
 
-const getTopSongs = (csv, artist) => {
-    // [ // songs with popularity scores
-    //  { name string, value: number}
-    //           
-    // Find all artists and their popularities in given genre          ]
+const getTopSongs = (csv, artist) => {       
+    // Find all songs and their popularities in given genre
     const songs = {}
     csv.filter((element) => element["Artist"] === artist).forEach(element => {
-        const s = element["Title"]
+        const s = element["Title"].slice(0, 18)
         if (s in songs) {
             songs[s] += parseInt(element["Popularity"])
         } else {
             songs[s] = parseInt(element["Popularity"])
         }
     })
+
+    // Sort the songs by their popularity
+    const songKeys = Object.keys(songs);
+    songKeys.sort(function (a, b) {
+        return songs[b] - songs[a];
+    })
+
+    // Find top 3 songs
+    const topSongs = songKeys.splice(0, 3)
+
+    const data = []
+    topSongs.forEach(s => {
+        data.push(
+            {
+                name: s,
+                value: songs[s] 
+            }
+        )
+    })
+    return data
+
 }
 
 const getTopArtists = (csv, genre) => {
     // Find all artists and their popularities in given genre
     const artists = {}
     csv.filter((element) => element["Top Genre"] === genre).forEach(element => {
-        const a = element["Artist"]
+        const a = element["Artist"].slice(0, 18)
         if (a in artists) {
             artists[a] += parseInt(element["Popularity"])
         } else {
@@ -34,15 +51,14 @@ const getTopArtists = (csv, genre) => {
     })
 
     // Find top 3 artists
-    const topArtists = artistKeys.splice(0, 3) // ["genre", ...]
+    const topArtists = artistKeys.splice(0, 3)
 
     const data = []
     topArtists.forEach(a => {
         data.push(
             {
                 name: a,
-                value: artists[a] // Is this math even logical???
-                // children: getTopSongs(csv, g)
+                children: getTopSongs(csv, a)
             }
         )
     })
@@ -53,7 +69,6 @@ const getTopArtists = (csv, genre) => {
 const getTopGenres = (csv) => {
     // Parse genres and their popularities in a dictionary
     const genres = {} // name -> popularity
-    // console.log(csv)
     csv.forEach(element => {
         const g = element["Top Genre"]
         if (g in genres) {
@@ -77,7 +92,6 @@ const getTopGenres = (csv) => {
         data.push(
             {
                 name: g,
-                // value: genres[g] // Is this math even logical???
                 children: getTopArtists(csv, g)
             }
         )
@@ -88,12 +102,6 @@ const getTopGenres = (csv) => {
 }
 
 const parseCSV = csv => {
-    // Format: {name: "", children: [
-    //     {name: "", children: [
-    //         ...
-    //     ]}
-    // ]}
-    // TODO: USE popularity to generate top genres scores
     console.log(csv)
     const data = {
         name: "genres",
@@ -101,7 +109,7 @@ const parseCSV = csv => {
     }
 
     
-    // const data = {
+    // data = {
     //     name: "genres",
     //     children: [ // top 3 genres based on popularity
     //         {
