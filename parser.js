@@ -19,7 +19,7 @@ const getTopSongs = (csv, artist, total) => {
 
     // Find top 3 songs
     console.log(total)
-    const n = total*numSections*0.03 // random math rn...
+    const n = total*songKeys.length/100 // random math rn...
     console.log(n)
     const topSongs = songKeys.splice(0, n)
 
@@ -55,18 +55,18 @@ const getTopArtists = (csv, genre, total) => {
     artistKeys.sort(function (a, b) {
         return artists[b] - artists[a];
     })
-    console.log(total)
-    const n = total*numSections*0.03 // random math rn...
+    console.log("genre pop: ", total)
+    const n = total*artistKeys.length/200
     console.log(n)
     // Find top 3 artists
-    const topArtists = artistKeys.splice(0, n) // n  instead of numSections
+    const topArtists = artistKeys.splice(0, n)
 
     const data = []
     topArtists.forEach(a => {
         data.push(
             {
                 name: a,
-                children: getTopSongs(csv, a, artists[a]/counts[a])
+                children: getTopSongs(csv, a, artists[a]/artistKeys.length)
             }
         )
     })
@@ -99,13 +99,21 @@ const getTopGenres = (csv) => {
     const topGenres = genreKeys.splice(0, numSections) // ["genre", ...]
 
     const data = []
+    let totalPercentageUsed = 0
     topGenres.forEach(g => {
+        console.log("TEST: ", genres[g]/csv.length)
+        totalPercentageUsed += genres[g]/csv.length
         data.push(
             {
                 name: g,
-                children: getTopArtists(csv, g, genres[g]/counts[g]) // last parameter should be popularity percentage
+                children: getTopArtists(csv, g, genres[g]/genreKeys.length) // last parameter should be popularity percentage
             }
         )
+    })
+
+    data.push({
+        name:"other",
+        value: 100 - totalPercentageUsed
     })
 
     return data
